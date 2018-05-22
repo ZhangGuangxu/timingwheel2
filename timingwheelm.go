@@ -71,19 +71,17 @@ func (tw *TimingWheel) AddItem(item interface{}) {
 
 // Run rolls this wheel.
 // Run has a dead loop.
-func (tw *TimingWheel) Run(shouldQuit func() bool, deferFunc func()) {
+func (tw *TimingWheel) Run(quitCh func() chan bool, deferFunc func()) {
 	defer deferFunc()
 
 	ticker := time.NewTicker(tw.stepTime)
 
 	for {
-		if shouldQuit() {
-			break
-		}
-
 		select {
 		case <-ticker.C:
 			tw.stepForward()
+		case <-quitCh():
+			return
 		}
 	}
 }
@@ -97,21 +95,19 @@ type timingwheelObserver interface {
 
 // runWithStepObserver needs two step observers.
 // This function is for ease of unit test.
-func (tw *TimingWheel) runWithStepObserver(shouldQuit func() bool, deferFunc func(), ob timingwheelObserver) {
+func (tw *TimingWheel) runWithStepObserver(quitCh func() chan bool, deferFunc func(), ob timingwheelObserver) {
 	defer deferFunc()
 
 	ticker := time.NewTicker(tw.stepTime)
 
 	for {
-		if shouldQuit() {
-			break
-		}
-
 		select {
 		case <-ticker.C:
 			ob.beforeStep()
 			tw.stepForwardWithObserver(ob)
 			ob.afterStep()
+		case <-quitCh():
+			return
 		}
 	}
 }

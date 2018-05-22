@@ -35,13 +35,8 @@ func TestWheel(test *testing.T) {
 	}
 
 	quit := make(chan bool, 1)
-	shouldQuit := func() bool {
-		select {
-		case <-quit:
-			return true
-		default:
-			return false
-		}
+	quitCh := func() chan bool {
+		return quit
 	}
 
 	var wg sync.WaitGroup
@@ -50,7 +45,7 @@ func TestWheel(test *testing.T) {
 	}
 
 	wg.Add(1)
-	go w.Run(shouldQuit, deferFunc)
+	go w.Run(quitCh, deferFunc)
 
 	wg.Add(1)
 	go func() {
@@ -127,13 +122,8 @@ func TestTimingwheel2(test *testing.T) {
 	}
 
 	quit := make(chan bool, 1)
-	shouldQuit := func() bool {
-		select {
-		case <-quit:
-			return true
-		default:
-			return false
-		}
+	quitCh := func() chan bool {
+		return quit
 	}
 
 	var wg sync.WaitGroup
@@ -142,7 +132,7 @@ func TestTimingwheel2(test *testing.T) {
 	}
 
 	wg.Add(1)
-	go w.Run(shouldQuit, deferFunc)
+	go w.Run(quitCh, deferFunc)
 
 	wg.Add(1)
 	go func() {

@@ -49,13 +49,8 @@ func ExampleTimingWheel() {
 	}
 
 	quit := make(chan bool, 1)
-	shouldQuit := func() bool {
-		select {
-		case <-quit:
-			return true
-		default:
-			return false
-		}
+	quitCh := func() chan bool {
+		return quit
 	}
 
 	var wg sync.WaitGroup
@@ -68,7 +63,7 @@ func ExampleTimingWheel() {
 	}
 
 	wg.Add(1)
-	go w.runWithStepObserver(shouldQuit, deferFunc, ob)
+	go w.runWithStepObserver(quitCh, deferFunc, ob)
 
 	quitAdder := make(chan bool, 1)
 	wg.Add(1)
@@ -104,13 +99,8 @@ func ExampleTimingWheel2() {
 	}
 
 	quit := make(chan bool, 1)
-	shouldQuit := func() bool {
-		select {
-		case <-quit:
-			return true
-		default:
-			return false
-		}
+	quitCh := func() chan bool {
+		return quit
 	}
 
 	var wg sync.WaitGroup
@@ -123,7 +113,7 @@ func ExampleTimingWheel2() {
 	}
 
 	wg.Add(1)
-	go w.runWithStepObserver(shouldQuit, deferFunc, ob)
+	go w.runWithStepObserver(quitCh, deferFunc, ob)
 
 	quitAdder := make(chan bool, 1)
 	wg.Add(1)
