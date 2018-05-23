@@ -19,12 +19,8 @@ func newItem() *Item {
 	}
 }
 
-func (i *Item) ShouldRelease() bool {
+func (i *Item) TryRelease() bool {
 	return time.Now().Sub(i.createTime) > maxTime
-}
-
-func (i *Item) Release() {
-
 }
 
 func TestWheel(test *testing.T) {

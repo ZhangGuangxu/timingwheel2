@@ -8,8 +8,7 @@ import (
 
 // Releaser is a interface decribes objects which can release.
 type Releaser interface {
-	ShouldRelease() bool
-	Release()
+	TryRelease() bool
 }
 
 const (
@@ -127,9 +126,8 @@ func (tw *TimingWheel) stepForward() {
 
 	for k := range curSlot {
 		if r, ok := k.(Releaser); ok {
-			if r.ShouldRelease() {
+			if r.TryRelease() {
 				delete(curSlot, k)
-				r.Release()
 			}
 		}
 	}
@@ -149,9 +147,8 @@ func (tw *TimingWheel) stepForwardWithObserver(ob timingwheelObserver) {
 
 	for k := range curSlot {
 		if r, ok := k.(Releaser); ok {
-			if r.ShouldRelease() {
+			if r.TryRelease() {
 				delete(curSlot, k)
-				r.Release()
 				ob.afterRelease()
 			}
 		}
